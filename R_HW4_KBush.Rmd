@@ -1,0 +1,84 @@
+---
+title: "R_Homework_4_KBush"
+output: html_document
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(warnings=FALSE)
+```
+
+##Toby Data
+My dog (Toby) has been super annoying lately with asking to go outside way more than he has in the past. I am going to track how frequently he asks to go outside per day, how he asks to go outside (scratching at the door, growling, stomping his feet, jumping on me, etc.), how long on average he spends outside per day, and additional factors like temperature, weather, if I am already outside, etc. I am predicting his little tantrums will decrease as the temperature goes down and the weather becomes increasingly worse. I also predict he will want to go out more often when I am outside and that he will ask to go out more frequently just to get treats when he comes back in.
+
+###Variables:
+1) Date
+2) Day of the week
+3) Number of times asked to go outside
+4) Extra measures taken to get my attention – growling, stomping, barking
+5) Approximate total time spent outside – minutes
+6) I am also/already outside – Y/N
+7) Number of times he actually needed to go outside/use the bathroom
+8) Average temperature outside – Fahrenheit
+9) Rain/snow – Y/N
+10) Number of treats received per day
+
+###Google Sheets link:
+https://docs.google.com/spreadsheets/d/1qCpVFeJJRBX59zaHjQlwXwpHoo9DW0Ur9LW2lo8m1UM/edit?usp=sharing
+
+
+##Initial Exploratory Analysis
+###Read in data and set working directory
+
+```{r}
+Toby <- read.csv("~/Desktop/Toby_data.csv", header=TRUE)
+```
+
+###Convert variables as needed
+```{r}
+Toby$No_times_ask <- as.numeric(Toby$No_times_ask)
+Toby$Total_time <- as.numeric(Toby$Total_time)
+Toby$Actual_times_used <- as.numeric(Toby$Actual_times_used)
+Toby$Temp <- as.numeric(Toby$Temp)
+Toby$No_treats <- as.numeric(Toby$No_treats)
+Toby$Rain_snow <- as.factor(Toby$Rain_snow)
+Toby$Animal <- as.factor(Toby$Animal)
+```
+
+###Summaries of continuous variables
+```{r}
+summary(Toby$Total_time)
+summary(Toby$Actual_times_used)
+summary(Toby$No_times_ask)
+summary(Toby$Temp)
+```
+
+###Summaries of categorical variables
+```{r warning=FALSE, message=FALSE}
+library(Hmisc)
+describe(Toby$Extra_measures)
+describe(Toby$Day_week)
+```
+
+###Look at a couple of plots
+```{r message=FALSE}
+plot(x=Toby$No_times_ask, y=Toby$Temp, main="Number of times asked to go outside vs.
+     Temperature", xlab="Number of times asked", ylab="Temperature (Farenheit)")
+library(Hmisc)
+library(ggplot2)
+plotA <- qplot(No_times_ask, data=Toby, geom="density",
+      fill=Rain_snow, alpha=I(.5), main="Number times asked vs. Rain/Snow", xlab="Number times asked", ylab="Density")
+plotA
+plotC <- qplot(No_times_ask, data=Toby, geom="density",
+      fill=Animal, alpha=I(.5), main="Number times asked vs. Animal presence", xlab="Number times asked", ylab="Density")
+plotC
+```
+*In order for qplot 'fill=...' code to work, fill variable must be coded as FACTOR* 
+
+###Run some t-tests
+```{r warning=FALSE}
+attach(Toby)
+t.test(No_times_ask, Temp)
+t.test(Temp, Total_time)
+```
+
+
