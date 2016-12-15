@@ -35,13 +35,9 @@ Variables:
 library(googlesheets)
 ```
 ###Load toby datset
-*The following code does not work - I'm guessing it's an authorization issue? - so I am including the load .csv code just so the rest of the page will run. I will figure this issue out before the last homework. I'm sorry!*
-t <- gs_title("Toby_data")
-t %>% gs_browse()
+```{r warning=FALSE, message=FALSE}
+t <- gs_url("https://docs.google.com/spreadsheets/d/1qCpVFeJJRBX59zaHjQlwXwpHoo9DW0Ur9LW2lo8m1UM/pubhtml")
 toby <- gs_read(t, header=TRUE)
-
-```{r}
-toby <- read.csv("~/Desktop/Toby_data.csv", header=TRUE)
 ```
 
 ##Take a look at the data
@@ -50,39 +46,38 @@ library(utils)
 head(toby)
 ```
 
-##Convert variables as needed
+##Make sure continuous variables are numeric
 ```{r}
-toby$No_times_ask <- as.numeric(toby$No_times_ask)
-toby$Total_time <- as.numeric(toby$Total_time)
-toby$Actual_times_used <- as.numeric(toby$Actual_times_used)
-toby$Temp <- as.numeric(toby$Temp)
-toby$No_treats <- as.numeric(toby$No_treats)
-toby$Rain_snow <- as.factor(toby$Rain_snow)
-toby$Animal <- as.factor(toby$Animal)
+nnames <- c('No_times_ask', 'Total_time', 'Actual_times_used', 'Temp', 'No_treats')
+toby[,nnames] <- lapply(toby[,nnames], as.numeric)
 ```
 
 ##Summaries of continuous variables
 ```{r}
 library(base)
-summary(toby$Total_time)
-summary(toby$Actual_times_used)
-summary(toby$No_times_ask)
-summary(toby$Temp)
+snames <- c('Total_time', 'Actual_times_used', 'No_times_ask', 'Temp')
+lapply(toby[,snames], summary)
 ```
 
 ###Summaries of categorical variables
 ```{r warning=FALSE, message=FALSE}
 library(Hmisc)
-describe(toby$Extra_measures)
-describe(toby$Day_week)
+snames <- c('Extra_measures','Day_week')
+lapply(toby[,snames], describe)
 ```
 
 ##Look at a couple of plots
 ```{r message=FALSE}
 library(Hmisc)
 library(ggplot2)
-plot(x=toby$No_times_ask, y=toby$Temp, main="Number of times asked to go outside vs.
-     Temperature", xlab="Number of times asked", ylab="Temperature (Farenheit)")
+```
+###Make sure categorical variables for fill plots are factor
+```{r}
+fnames <- c('Rain_snow', 'Animal')
+toby[,fnames] <- lapply(toby[,fnames], as.factor)
+```
+###Plot
+```{r}
 plotA <- qplot(No_times_ask, data=toby, geom="density",
       fill=Rain_snow, alpha=I(.5), main="Number times asked vs. Rain/Snow", xlab="Number times asked", ylab="Density")
 plotA
@@ -91,7 +86,7 @@ plotC <- qplot(No_times_ask, data=toby, geom="density",
 plotC
 ```
 
-*In order for qplot 'fill=...' code to work, fill variable must be coded as FACTOR*
+We can see here the dog requested to go out less when snow or rain was present. The data regarding if he saw an animal out the window first came back inconclusive.
 
 ##Run some t-tests
 ```{r warning=FALSE}
@@ -100,17 +95,42 @@ t.test(No_times_ask, Temp)
 t.test(Temp, Total_time)
 ```
 
-##dogr Functions
-###fdogown
+The temperature outside looks to be correlated with both the number of times the dog asked to go out and the total time the dog spent outside.
+
+##dogr Package
+###fdogown Function
 The fdogown function in the dogr package generates a basic frequency table of the number of times a dog requests to go outside versus a specified categorical variable in the canine dataset. 
+```{r warning=FALSE, message=FALSE}
+library(devtools)
+library(dogr)
+fdogown(x=toby$No_times_ask, y=toby$Owner_outside)
+```
+The average number of times the dog asked to go out corresponded with the 3 times the owner was already present outside - this was unexpected. We expected to see the dog request more times in a day if he saw his owner already outside.
 
-###measureplot
+###measureplot Function
 The measureplot function in the dogr package generates a basic box plot of a categorical variable of extra measures taken - i.e. growling, scratching at the door, whining, etc. - and a specified continuous variable such as the temperature outside.
+```{r}
+measureplot(x=factor(toby$Extra_measures), y=toby$Temp)
+```
 
-###tempplot
+###tempplot Function
 The tempplot function in the dogr package generates a basic scatter plot of a continuous variable of the number of times a dog asks to go outside and a specified second continuous variable such as the temperature outside.
+```{r}
+tempplot(x=toby$No_times_ask, y=toby$Temp)
+```
+
+The data shows the dog for the most part wanted to go outside more frequently when the temperature was between 40 and 75. 
 
 ###timebox Function
 The timebox function in the dogr package generates a basic box plot of total time the dog spends outside versus a specified categorical variable in the canine dataset.
+```{r}
+timebox(x=toby$Rain_snow, y=toby$Total_time, xlab="Rain/Snow present", ylab="Total time            spent outside (minutes)", main="Total time spent outside vs. Rain/Snow present")
+```
+
+###ddogr Function
+The ddogr function generates a dual-use plot showing the total time in minutes a dog spends outside each time they go out versus a specified continuous variable in the dataset such as temperature in Farenheit.
+```{r}
+ddogr(toby$Total_time, toby$Temp)
+```
 
 
