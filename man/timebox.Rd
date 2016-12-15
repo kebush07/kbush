@@ -28,8 +28,7 @@ graphics package required
 ## An example using the dataset "toby" and variables "Rain_snow" to indicate the presence of rain or snow at the time the dog goes outside, and "Total_time" to indicate the total amount of time in minutes the dog spent outside.
 
 ### Get toby data
-t <- gs_title("Toby_data")
-t %>% gs_browse()
+t <- gs_url("https://docs.google.com/spreadsheets/d/1qCpVFeJJRBX59zaHjQlwXwpHoo9DW0Ur9LW2lo8m1UM/pubhtml")
 toby <- gs_read(t, header=TRUE)
 
 ### Example showing basic plot

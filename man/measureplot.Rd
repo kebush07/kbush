@@ -28,13 +28,12 @@ graphics package required
 ## An example using the dataset "toby" and variables "Extra_measures" to indicate extra measures taken by the dog when asking to go outside, and "Temp" to indicate the temperature in Farenheit outside at the time the dog goes out.
 
 ### Get toby data
-t <- gs_title("Toby_data")
-t %>% gs_browse()
+t <- gs_url("https://docs.google.com/spreadsheets/d/1qCpVFeJJRBX59zaHjQlwXwpHoo9DW0Ur9LW2lo8m1UM/pubhtml")
 toby <- gs_read(t, header=TRUE)
 
 ### Example showing basic plot
 measureplot(x=toby$Extra_measures, y=toby$Temp)
 
 ### Example showing plot with labels and title
-measureplot(x=toby$Extra_measures, y=toby$Temp, xlab="Extra measures taken", ylab="Temperat     ure (Farenheight)", main="Extra measures taken vs. Temperature outside")
+measureplot(x=toby$Extra_measures, y=toby$Temp, xlab="Extra measures taken", ylab="Temperature (Farenheight)", main="Extra measures taken vs. Temperature outside")
 }

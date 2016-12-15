@@ -23,8 +23,7 @@ stats package required
 ## An example using the dataset "toby" and variables "No_times_ask" to indicate how many times the dog requested to go outside, and "Owner_outside" to indicate if the owner was already outside at the time of asking.
 
 ### Get toby data
-t <- gs_title("Toby_data")
-t %>% gs_browse()
+t <- gs_url("https://docs.google.com/spreadsheets/d/1qCpVFeJJRBX59zaHjQlwXwpHoo9DW0Ur9LW2lo8m1UM/pubhtml")
 toby <- gs_read(t, header=TRUE)
 
 ### Example showing basic plot
